@@ -1,5 +1,5 @@
 import React from 'react'
-import Terminal from './Terminal'
+
 import TerminalTest from './TerminalTest'
 
 const styles = {

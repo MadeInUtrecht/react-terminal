@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 const styles = {
   terminal: `w-[90%] h-[90%] rounded-2xl flex flex-col justify-start items-start md:w-[95%] font-mono text-white text-2xl p-11  `,
@@ -6,7 +6,7 @@ const styles = {
   message: ``
 };
 
-const Terminal = () => {
+const TerminalTest = () => {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState([]);
   const [inputCounter, setInputCounter] = useState(0);
@@ -28,6 +28,7 @@ const Terminal = () => {
         const color = input.slice(6);
         const colorStyle = { color: 'white' };
         switch (color) {
+          default: 
           case 'red':
             colorStyle.color = '#ff5555';
             break;
@@ -74,4 +75,4 @@ const Terminal = () => {
   );
 };
 
-export default Terminal;
+export default TerminalTest;
