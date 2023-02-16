@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const styles = {
-  terminal: `w-[90%] h-[90%] rounded-2xl flex justify-start items-start md:w-[95%] font-mono text-white text-2xl p-11`,
+  terminal: `w-[90%] h-[90%] rounded-2xl flex justify-start items-start md:w-[95%] font-mono text-white text-2xl p-11  `,
   input: `text-2xl text-white bg-transparent outline-none focus:outline-none`,
   message: `text-base text-white`
 };
@@ -26,14 +26,30 @@ const Terminal = () => {
         inputRef.current.focus();
       }
     }, 25);
-  }, []);
+    if (showCommands) {
+      const commandList = '\n\nhelp - show a list of commands\n' +
+        'clear - clear the terminal\n' +
+        'exit - close the terminal\n' +
+        'color-red/green/white/yellow/blue - change text color\n';
+      let currentCommandIndex = 0;
+      const commandIntervalId = setInterval(() => {
+        setDisplayText((prev) => prev.slice(0, -1) + commandList[currentCommandIndex] + '_');
+        currentCommandIndex++;
+        if (currentCommandIndex === commandList.length) {
+          clearInterval(commandIntervalId);
+          setDisplayText((prev) => prev.slice(0, -1));
+          inputRef.current.focus();
+        }
+      }, 25);
+    }
+  }, [showCommands]);
 
 
 
   const handleInputSubmit = (e) => {
     e.preventDefault();
     const value = inputRef.current.value.trim().toLowerCase();
-
+  
     if (value === 'help') {
       setShowCommands(true);
     } else if (value === 'clear') {
@@ -42,26 +58,42 @@ const Terminal = () => {
       window.close();
     } else if (value === 'color-red') {
       setColor('#f00');
-
+  
     } else if (value === 'color-green') {
         setColor('#0f0');
-        setDisplayText(`${displayText}> ${value}\nText color changed to green\n`);
+        const newResponse = `${displayText}> ${value}\nText color changed to green\n`;
+        setDisplayText((prev) => prev + newResponse);
+        typeOutMessage(newResponse);
+  
     } else if (value === 'color-blue') {
         setColor('#00f');
-
+  
     } else if (value === 'color-yellow') {
         setColor('#ff0');
-
+  
     } else if (value === 'color-white') {
             setColor('#fff');
-
+  
     } else {
-      setDisplayText(
-        `${displayText}> ${value}\nCommand "${value}" is not recognized.\n`
-      );
+      const newResponse = `${displayText}> ${value}\nCommand "${value}" is not recognized.\n`;
+      setDisplayText((prev) => prev + newResponse);
+      typeOutMessage(newResponse);
     }
-
+  
     inputRef.current.value = '';
+  };
+  
+  const typeOutMessage = (message) => {
+    let currentIndex = 0;
+    const intervalId = setInterval(() => {
+      setDisplayText((prev) => prev.slice(0, -1) + message[currentIndex] + '_');
+      currentIndex++;
+      if (currentIndex === message.length) {
+        clearInterval(intervalId);
+        setDisplayText((prev) => prev.slice(0, -1));
+        inputRef.current.focus();
+      }
+    }, 25);
   };
 
   return (
