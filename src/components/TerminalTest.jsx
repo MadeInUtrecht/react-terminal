@@ -61,8 +61,8 @@ const Terminal = () => {
       <div className={styles.message}>
         {output}
       </div>
-      <br></br>
-      <form onSubmit={handleSubmit}>
+      
+      <form onSubmit={handleSubmit}>>
         <input
           type="text"
           value={input}
