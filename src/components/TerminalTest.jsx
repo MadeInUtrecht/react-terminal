@@ -19,7 +19,7 @@ const Terminal = () => {
       if (input === 'help') {
         const helpMessage = 'help - show a list of commands\n clear - clear the terminal\n exit - close the terminal\n color-red/green/white/yellow/blue - change text color';
         const helpMessageClean = helpMessage.split('\n').map((line, index) => <p key={index}>{line}</p>);
-        newOutput.push(<br></br>,input, <br></br>, <br></br>, helpMessageClean);
+        newOutput.push(<br></br>,'>', input, <br></br>, <br></br>, helpMessageClean);
       } else if (input === 'clear') {
         newOutput.length = 0;
       } else if (input === 'exit') {
@@ -61,8 +61,7 @@ const Terminal = () => {
       <div className={styles.message}>
         {output}
       </div>
-      
-      <form onSubmit={handleSubmit}>>
+      <form onSubmit={handleSubmit}>{'>'}
         <input
           type="text"
           value={input}
