@@ -8,11 +8,11 @@ const styles = {
 
 const Terminal = () => {
   const [displayText, setDisplayText] = useState('');
-  const [showCursor, setShowCursor] = useState(true);
+
   const [showCommands, setShowCommands] = useState(false);
   const [color, setColor] = useState(null);
   const inputRef = useRef(null);
-  const messageRef = useRef(null);
+
 
   useEffect(() => {
     const originalText =
@@ -28,14 +28,7 @@ const Terminal = () => {
     }, 25);
   }, []);
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setShowCursor((showCursor) => !showCursor);
-    }, 500);
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
+
 
   const handleInputSubmit = (e) => {
     e.preventDefault();
@@ -49,7 +42,7 @@ const Terminal = () => {
       window.close();
     } else if (value === 'color-red') {
       setColor('#f00');
-      
+
     } else if (value === 'color-green') {
         setColor('#0f0');
         setDisplayText(`${displayText}> ${value}\nText color changed to green\n`);
