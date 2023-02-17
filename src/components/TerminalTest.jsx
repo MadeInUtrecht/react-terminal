@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const styles = {
-  terminal: `w-[90%] h-[90%] rounded-2xl flex flex-col justify-start items-start md:w-[95%] font-mono text-white text-2xl p-11  `,
+  terminalBorder: `w-[100%] h-[100%] rounded-2xl flex justify-center items-center p-5`,
+  terminal: `w-[100%] h-[100%] md:w-[100%] md:h-[100%] rounded-2xl flex flex-col justify-start items-start font-mono text-white text-2xl p-11 overflow-y-auto bg-[#222]`,
   input: `text-2xl text-white bg-transparent outline-none focus:outline-none`,
   message: ``
+
 };
+
+
 
 const TerminalTest = () => {
   const [input, setInput] = useState('');
@@ -24,11 +29,23 @@ const TerminalTest = () => {
         newOutput.length = 0;
       } else if (input === 'exit') {
         window.close();
-      } else if (input.startsWith('color-')) {
+      } else if (input.startsWith('weather')) {
+        const apiKey = 'e0196a799da31cf12346606037ede7d0';
+        const city = input.split(' ')[1];
+        axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
+          .then(response => {
+            const { name, main } = response.data;
+            const temperature = main.temp;
+            const description = main.weather[0].description;
+            newOutput.push(<p key={inputCounter}>The weather in {name} is {description} and the temperature is {temperature}°C.</p>);
+          })
+          .catch(error => {
+            newOutput.push(<p key={inputCounter}>Sorry, there was an error fetching the weather for {city}.</p>);
+          });
+        } else if (input.startsWith('color-')) {
         const color = input.slice(6);
         const colorStyle = { color: 'white' };
         switch (color) {
-          default: 
           case 'red':
             colorStyle.color = '#ff5555';
             break;
@@ -40,6 +57,8 @@ const TerminalTest = () => {
             break;
           case 'green':
             colorStyle.color = '#4caf50';
+            break;
+          default:
             break;
         }
         newOutput.push(<p key={inputCounter} style={colorStyle}>Color changed to {color}</p>);
@@ -58,19 +77,22 @@ const TerminalTest = () => {
   }, []);
 
   return (
-    <div className={styles.terminal}>
-      <div className={styles.message}>
-        {output}
+    <div className={styles.terminalBorder}>
+      <div className={styles.terminal}>
+        <div className={styles.message}>
+          {output}
+        </div>
+        <br></br>
+        <form onSubmit={handleSubmit}>{'>'}
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            className={styles.input}
+            autoFocus={true}
+          />
+        </form>
       </div>
-      <form onSubmit={handleSubmit}>{'>'}
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className={styles.input}
-          autoFocus={true}
-        />
-      </form>
     </div>
   );
 };

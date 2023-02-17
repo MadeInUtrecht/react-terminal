@@ -1,9 +1,8 @@
 import React from 'react'
-
-import TerminalTest from './TerminalTest'
+import TerminalTest2 from './TerminalTest2'
 
 const styles = {
-    content: `w-full h-[100%] bg-[#393E46] flex justify-center items-center`,
+    content: `w-full h-[100%] bg-[#393E46] flex justify-center items-center overflow-hidden`,
     terminalBorder: `w-[90%] h-[90%] bg-[#222831] rounded-2xl flex justify-center items-center`,
 }
 
@@ -11,7 +10,7 @@ const Content = () => {
   return (
     <div className={styles.content}>
       <div className={styles.terminalBorder}>
-        <TerminalTest />
+        <TerminalTest2 />
       </div>
     </div>
   )
