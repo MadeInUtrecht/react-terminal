@@ -13,11 +13,15 @@ const styles = {
 }
 
 const Navbar = ({ setSelectedComponent, selectedComponent }) => {
+  const gitHub = () => {
+    window.open('https://github.com/MadeInUtrecht/react-terminal', '_blank')
+  }
+
   return (
     <div className={styles.navbar}>
         <div className={styles.upperBar}>
           <div className={styles.icons}>
-            <BsGithub size={32} />
+            <BsGithub size={32} onClick={gitHub} className="cursor-pointer" />
           </div>
         </div>
         <div className={styles.lowerBar}>
