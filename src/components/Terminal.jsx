@@ -1,136 +1,112 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 
 const styles = {
-  terminal: `w-[90%] h-[90%] rounded-2xl flex justify-start items-start md:w-[95%] font-mono text-white text-2xl p-11  `,
-  input: `text-2xl text-white bg-transparent outline-none focus:outline-none`,
-  message: `text-base text-white`
-};
+    terminalBorder: `w-[100%] h-[100%] rounded-2xl flex justify-center items-center p-5`,
+    terminal: `w-[100%] h-[100%] md:w-[100%] md:h-[100%] rounded-2xl flex flex-col justify-start items-start font-mono text-white text-2xl p-11 overflow-auto flex-grow bg-[#222] `,
+    input: `text-2xl text-white bg-transparent outline-none focus:outline-none  `,
+    message: ``,
+  };
+
 
 const Terminal = () => {
-  const [displayText, setDisplayText] = useState('');
 
-  const [showCommands, setShowCommands] = useState(false);
-  const [color, setColor] = useState(null);
+  const [input, setInput] = React.useState('');
+  const [messages, setMessages] = React.useState([
+    'Welcome...',
+    'This is an interactive terminal as part of a showcase portfolio project',
+    'Type "help" to see a list of commands',
+    'Type "clear" to clear the terminal',
+    'Type "portfolio" to see more of my projects',
+    'Type "exit" to close the terminal',
+  ]);
+  const [textColor, setTextColor] = React.useState('#ffffff');
+  const terminalRef = useRef(null);
   const inputRef = useRef(null);
 
-
-  useEffect(() => {
-    const originalText =
-      'Welcome...\nThis is an interactive terminal as part of a portfolio showcase project\nType "help" to see a list of commands\nType "clear" to clear the terminal\nType "exit" to close the terminal\n\n';
-    let currentIndex = 0;
-    const intervalId = setInterval(() => {
-      setDisplayText(originalText.slice(0, currentIndex + 1));
-      currentIndex++;
-      if (currentIndex === originalText.length) {
-        clearInterval(intervalId);
-        inputRef.current.focus();
-      }
-    }, 25);
-    if (showCommands) {
-      const commandList = '\n\nhelp - show a list of commands\n' +
-        'clear - clear the terminal\n' +
-        'exit - close the terminal\n' +
-        'color-red/green/white/yellow/blue - change text color\n';
-      let currentCommandIndex = 0;
-      const commandIntervalId = setInterval(() => {
-        setDisplayText((prev) => prev.slice(0, -1) + commandList[currentCommandIndex] + '_');
-        currentCommandIndex++;
-        if (currentCommandIndex === commandList.length) {
-          clearInterval(commandIntervalId);
-          setDisplayText((prev) => prev.slice(0, -1));
-          inputRef.current.focus();
-        }
-      }, 25);
-    }
-  }, [showCommands]);
-
-
-
-  const handleInputSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const value = inputRef.current.value.trim().toLowerCase();
-  
-    if (value === 'help') {
-      setShowCommands(true);
-    } else if (value === 'clear') {
-      setDisplayText('');
-    } else if (value === 'exit') {
-      window.close();
-    } else if (value === 'color-red') {
-      setColor('#f00');
-  
-    } else if (value === 'color-green') {
-        setColor('#0f0');
-        const newResponse = `${displayText}> ${value}\nText color changed to green\n`;
-        setDisplayText((prev) => prev + newResponse);
-        typeOutMessage(newResponse);
-  
-    } else if (value === 'color-blue') {
-        setColor('#00f');
-  
-    } else if (value === 'color-yellow') {
-        setColor('#ff0');
-  
-    } else if (value === 'color-white') {
-            setColor('#fff');
-  
+    setMessages([...messages, input]);
+    setInput('');
+    if (input === 'help') {
+        setMessages([...messages, '-','help - show a list of commands', 'clear - clear the terminal', 'exit - close the terminal', 'color-red/green/white/yellow/blue - change text color', 'weather-"cityname" - get the weather for a city']);
+    } else if (input === 'clear') {
+        setMessages(['The terminal has been cleared...']);
+    } else if (input === 'exit') {
+        window.close();
+    } else if (input.startsWith('color-')) {
+        const color = input.slice(6);
+        switch (color) {
+            case 'red':
+                setTextColor('#ff5555');
+                break;
+            case 'blue':
+                setTextColor('#1e90ff');
+                break;
+            case 'yellow':
+                setTextColor('#ffff66');
+                break;
+            case 'green':
+                setTextColor('#4caf50');
+                break;
+            case 'white':
+                setTextColor('#ffffff');
+                break;
+            default:
+                setTextColor('#ffffff');
+                break;
+        }
+        setMessages([...messages, '-','Text color changed to ' + color]);
+    } else if (input === 'portfolio') {
+        window.open('https://www.vadimboot.com', '_blank');
+    } else if (input.startsWith('weather-')) {
+        const city = input.slice(8);
+        const API_KEY = 'e0196a799da31cf12346606037ede7d0';
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
+        try {
+          const response = await fetch(url);
+          const data = await response.json();
+          const weatherInfo = `${data.name}: ${data.weather[0].description}, temperature: ${data.main.temp} °C, feels like: ${data.main.feels_like} °C`;
+          setMessages([...messages, '-', weatherInfo]);
+        } catch (error) {
+          setMessages([...messages, '-', `Sorry, could not retrieve weather information for ${city}`]);
+        }
     } else {
-      const newResponse = `${displayText}> ${value}\nCommand "${value}" is not recognized.\n`;
-      setDisplayText((prev) => prev + newResponse);
-      typeOutMessage(newResponse);
+        setMessages([...messages, '-','Sorry, that is not a valid command']);
     }
-  
-    inputRef.current.value = '';
-  };
-  
-  const typeOutMessage = (message) => {
-    let currentIndex = 0;
-    const intervalId = setInterval(() => {
-      setDisplayText((prev) => prev.slice(0, -1) + message[currentIndex] + '_');
-      currentIndex++;
-      if (currentIndex === message.length) {
-        clearInterval(intervalId);
-        setDisplayText((prev) => prev.slice(0, -1));
+};
+
+    useEffect(() => {
+        const terminal = terminalRef.current;
+        terminal.scrollTop = terminal.scrollHeight;
+    }, [messages]);
+
+    const handleClick = () => {
         inputRef.current.focus();
       }
-    }, 25);
-  };
 
   return (
-    <div className={styles.terminal} style={{ color: color }}>
-      <div className={styles.welcomeText}>
-        {displayText.split('\n').map((line, index) => (
-          <div key={index}>{line}</div>
+    <>
+    <div className={styles.terminalBorder}>
+      <div className={styles.terminal} ref={terminalRef} onClick={handleClick}>
+        {messages.map((message, index) => (
+          <p key={index} style={{color: textColor}} className={styles.message}>
+            {message}
+          </p>
         ))}
-        {showCommands && (
-          <div>
-            <br></br>
-            <ul>
-              <li>help - show a list of commands</li>
-              <li>clear - clear the terminal</li>
-              <li>exit - close the terminal</li>
-              <li>color-red/green/white/yellow/blue - change text color</li>
-            </ul>
-            <br></br>
-            {color && (
-              <div style={{ marginTop: '0.5rem' }}>
-                Text color changed to <span style={{ color: color }}>{color}</span>
-              </div>
-            )}
-          </div>
-        )}
-        <form onSubmit={handleInputSubmit}>
-          <span>&gt; </span>
+        <br></br>
+        <form onSubmit={handleSubmit}>&gt;
           <input
-            ref={inputRef}
             className={styles.input}
-            autoComplete="off"
             autoFocus={true}
-            style={{ color: color }}
-          />
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            ref={inputRef}
+          ></input>
         </form>
       </div>
     </div>
+    </>
   );
 };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Content from './components/Content';
 import Navbar from './components/Navbar';
 
@@ -7,10 +7,12 @@ const styles = {
 }
 
 function App() {
+  const [selectedComponent, setSelectedComponent] = useState('terminal');
+
   return (
     <div className={styles.app}>
-      <Navbar />
-      <Content />
+      <Navbar setSelectedComponent={setSelectedComponent} selectedComponent={selectedComponent} />
+      <Content selectedComponent={selectedComponent} />
     </div>
   );
 }
